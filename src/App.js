@@ -12,6 +12,7 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { ImageUpload } from "./components/ImageUpload";
 import { uid } from "uid";
 import ImageViewer from "react-simple-image-viewer";
+import Spinner from "./components/Spinner";
 
 firebase.initializeApp({
   apiKey: "AIzaSyDO0s1jl1dlHn5r2RvR0fuTg8qivFdmCb8",
@@ -28,7 +29,7 @@ const firestore = firebase.firestore();
 const analytics = firebase.analytics();
 
 function App() {
-  const [user] = useAuthState(auth);
+  const [user, isLoading] = useAuthState(auth);
 
   return (
     <div className="App">
@@ -37,7 +38,15 @@ function App() {
         <SignOut />
       </header>
 
-      <section>{user ? <ChatRoom /> : <SignIn />}</section>
+      <section className="home-section">
+        {isLoading ? (
+          <Spinner className="auth-load" />
+        ) : user ? (
+          <ChatRoom />
+        ) : (
+          <SignIn />
+        )}
+      </section>
     </div>
   );
 }
@@ -79,24 +88,33 @@ function ChatRoom() {
 
   const [formValue, setFormValue] = useState("");
   const [img, setImg] = useState(null);
+  const [loader, setLoader] = useState(false);
 
   const sendMessage = async (e) => {
-    e.preventDefault();
+    try {
+      setLoader(true);
+      e.preventDefault();
 
-    const { uid, photoURL } = auth.currentUser;
+      const { uid, photoURL } = auth.currentUser;
 
-    const { imgSrc } = img ? await uploadImage(img) : { imgSrc: "" };
+      const { imgSrc } = img ? await uploadImage(img.file) : { imgSrc: "" };
 
-    await messagesRef.add({
-      text: formValue,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      uid,
-      photoURL,
-      imgSrc,
-    });
+      await messagesRef.add({
+        text: formValue,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        uid,
+        photoURL,
+        imgSrc,
+      });
 
-    setFormValue("");
-    dummy.current.scrollIntoView({ behavior: "smooth" });
+      setFormValue("");
+      setImg(null);
+      dummy.current.scrollIntoView({ behavior: "smooth" });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoader(false);
+    }
   };
 
   return (
@@ -109,7 +127,11 @@ function ChatRoom() {
       </main>
 
       <div className="send-message-form-container">
-        <ImageUpload onImageChange={setImg} />
+        {loader ? (
+          <Spinner />
+        ) : (
+          <ImageUpload onImageChange={setImg} image={img} />
+        )}
         <form onSubmit={sendMessage}>
           <input
             value={formValue}
@@ -128,8 +150,6 @@ function ChatRoom() {
 
 function ChatMessage(props) {
   const { text, uid, photoURL, imgSrc } = props.message;
-  console.log("imgSrc", imgSrc);
-
   const messageClass = uid === auth.currentUser.uid ? "sent" : "received";
   const [isViewerOpened, setIsViewerOpened] = useState(false);
   const openViewer = () => setIsViewerOpened(true);
@@ -178,7 +198,8 @@ function ChatMessage(props) {
  */
 async function uploadImage(file) {
   const storage = firebase.storage().ref();
-  const image = storage.child(`attached-image-${uid(16)}.jpg`);
+  const imgName = `attached-image-${uid(16)}.jpg`;
+  const image = storage.child(imgName);
 
   await image.put(file);
 

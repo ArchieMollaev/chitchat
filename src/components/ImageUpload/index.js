@@ -2,14 +2,11 @@ import React from "react";
 import ImageUploading from "react-images-uploading";
 
 export function ImageUpload(props) {
-  const [images, setImages] = React.useState([]);
   const maxNumber = 1;
+  const images = props.image ? [props.image] : [];
 
   const onChange = (imageList, addUpdateIndex) => {
-    // data for submit
-    console.log(imageList, addUpdateIndex);
-    setImages(imageList);
-    props.onImageChange(imageList[0] ? imageList[0].file : null);
+    props.onImageChange(imageList[0] ? imageList[0] : null);
   };
 
   return (
