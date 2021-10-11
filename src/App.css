@@ -42,12 +42,10 @@ body {
 }
 
 main {
-  padding: 10px;
-  height: 80vh;
-  margin: 10vh 0 10vh;
+  padding: 10vh 0;
+  height: 100vh;
   overflow-y: scroll;
-  display: flex;
-  flex-direction: column;
+  box-sizing: border-box;
 }
 
 main::-webkit-scrollbar {
