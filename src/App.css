@@ -54,13 +54,46 @@ main::-webkit-scrollbar-thumb {
   background: #6649b8;
 }
 
-form {
-  height: 10vh;
+.send-message-form-container {
+  /* height: 10vh; */
+  max-height: 30vh;
   position: fixed;
   bottom: 0;
+  max-width: 728px;
+  width: 100%;
+}
+
+.upload__image-wrapper {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.upload__image-wrapper img {
+  border: 3px solid white;
+  width: 100px;
+  height: auto;
+  margin: 2px 5px;
+}
+
+.attachment-preview {
+  width: 100px;
+  max-width: 100px;
+  height: auto;
+  margin: 2px 5px;
+  cursor: pointer;
+  display: block;
+}
+
+.sent .message-text {
+  text-align: right;
+}
+.received .message-text {
+  text-align: left;
+}
+
+form {
   background-color: rgb(24, 23, 23);
   width: 100%;
-  max-width: 728px;
   display: flex;
   font-size: 1.5rem;
 }
@@ -69,7 +102,6 @@ form button {
   width: 20%;
   background-color: rgb(56, 56, 143);
 }
-
 
 input {
   line-height: 1.5;
@@ -99,7 +131,6 @@ button:disabled {
   cursor: not-allowed;
 }
 
-
 .sign-in {
   color: #282c34;
   background: white;
@@ -107,10 +138,8 @@ button:disabled {
   margin: 0 auto;
 }
 
-
-
-
-ul, li {
+ul,
+li {
   text-align: left;
   list-style: none;
 }
@@ -131,7 +160,6 @@ p {
   align-items: center;
 }
 
-
 .sent {
   flex-direction: row-reverse;
 }
@@ -146,10 +174,9 @@ p {
   color: black;
 }
 
-img {
+.avatar-img {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   margin: 2px 5px;
 }
-
